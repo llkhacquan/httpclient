@@ -1,6 +1,7 @@
 package httpclient
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"testing"
@@ -36,7 +37,7 @@ func TestClient_Get(t *testing.T) {
 
 	t.Run("get single pokemon", func(t *testing.T) {
 		var pokemon Pokemon
-		err := client.Get("https://pokeapi.co/api/v2/pokemon/pikachu", &pokemon)
+		err := client.Get(context.Background(), "https://pokeapi.co/api/v2/pokemon/pikachu", &pokemon)
 		if err != nil {
 			t.Fatalf("GET request failed: %v", err)
 		}
@@ -54,7 +55,7 @@ func TestClient_Get(t *testing.T) {
 
 	t.Run("get pokemon list", func(t *testing.T) {
 		var list PokemonList
-		err := client.Get("https://pokeapi.co/api/v2/pokemon?limit=5", &list)
+		err := client.Get(context.Background(), "https://pokeapi.co/api/v2/pokemon?limit=5", &list)
 		if err != nil {
 			t.Fatalf("GET request failed: %v", err)
 		}
@@ -69,7 +70,7 @@ func TestClient_Get(t *testing.T) {
 
 	t.Run("get with custom headers", func(t *testing.T) {
 		var pokemon Pokemon
-		err := client.Get("https://pokeapi.co/api/v2/pokemon/1", &pokemon,
+		err := client.Get(context.Background(), "https://pokeapi.co/api/v2/pokemon/1", &pokemon,
 			WithHeader("User-Agent", "httpclient-test/1.0"))
 		if err != nil {
 			t.Fatalf("GET request failed: %v", err)
@@ -83,7 +84,7 @@ func TestClient_Get(t *testing.T) {
 	t.Run("get with status capture", func(t *testing.T) {
 		var status int
 		var pokemon Pokemon
-		err := client.Get("https://pokeapi.co/api/v2/pokemon/bulbasaur", &pokemon,
+		err := client.Get(context.Background(), "https://pokeapi.co/api/v2/pokemon/bulbasaur", &pokemon,
 			WithStatus(&status))
 		if err != nil {
 			t.Fatalf("GET request failed: %v", err)
@@ -100,7 +101,7 @@ func TestClient_Get(t *testing.T) {
 	t.Run("get non-existent pokemon with status capture", func(t *testing.T) {
 		var status int
 		var result interface{} // Use interface{} since 404 response might not be valid Pokemon JSON
-		err := client.Get("https://pokeapi.co/api/v2/pokemon/nonexistent", &result,
+		err := client.Get(context.Background(), "https://pokeapi.co/api/v2/pokemon/nonexistent", &result,
 			WithStatus(&status))
 		// Should not return error when status is captured, even if JSON parsing fails
 		if err != nil {
@@ -114,7 +115,7 @@ func TestClient_Get(t *testing.T) {
 
 	t.Run("get non-existent pokemon without status capture", func(t *testing.T) {
 		var pokemon Pokemon
-		err := client.Get("https://pokeapi.co/api/v2/pokemon/nonexistent", &pokemon)
+		err := client.Get(context.Background(), "https://pokeapi.co/api/v2/pokemon/nonexistent", &pokemon)
 		// Should return error when status is not captured
 		if err == nil {
 			t.Error("expected error for 404 response")
@@ -135,7 +136,7 @@ func TestClient_Post(t *testing.T) {
 		}
 
 		var result map[string]interface{}
-		err := client.Post("https://httpbin.org/post", postData, &result)
+		err := client.Post(context.Background(), "https://httpbin.org/post", postData, &result)
 		if err != nil {
 			t.Fatalf("POST request failed: %v", err)
 		}
@@ -155,7 +156,7 @@ func TestClient_Post(t *testing.T) {
 		postData := map[string]string{"test": "value"}
 		var result map[string]interface{}
 
-		err := client.Post("https://httpbin.org/post", postData, &result,
+		err := client.Post(context.Background(), "https://httpbin.org/post", postData, &result,
 			WithHeader("X-Test-Header", "test-value"))
 		if err != nil {
 			t.Fatalf("POST request failed: %v", err)
@@ -177,7 +178,7 @@ func TestClient_Post(t *testing.T) {
 			"X-Request-ID": "req789",
 		}
 
-		err := client.Post("https://httpbin.org/post", postData, &result,
+		err := client.Post(context.Background(), "https://httpbin.org/post", postData, &result,
 			WithHeaders(customHeaders))
 		if err != nil {
 			t.Fatalf("POST request with multiple headers failed: %v", err)
@@ -214,7 +215,7 @@ func TestClient_Patch(t *testing.T) {
 		}
 
 		var result map[string]interface{}
-		err := client.Patch("https://httpbin.org/patch", patchData, &result)
+		err := client.Patch(context.Background(), "https://httpbin.org/patch", patchData, &result)
 		if err != nil {
 			t.Fatalf("PATCH request failed: %v", err)
 		}
@@ -231,7 +232,7 @@ func TestClient_Delete(t *testing.T) {
 
 	t.Run("delete request", func(t *testing.T) {
 		var result map[string]interface{}
-		err := client.Delete("https://httpbin.org/delete", &result)
+		err := client.Delete(context.Background(), "https://httpbin.org/delete", &result)
 		if err != nil {
 			t.Fatalf("DELETE request failed: %v", err)
 		}
@@ -245,7 +246,7 @@ func TestClient_Delete(t *testing.T) {
 	t.Run("delete with status capture", func(t *testing.T) {
 		var status int
 		var result map[string]interface{}
-		err := client.Delete("https://httpbin.org/delete", &result,
+		err := client.Delete(context.Background(), "https://httpbin.org/delete", &result,
 			WithStatus(&status))
 		if err != nil {
 			t.Fatalf("DELETE request failed: %v", err)
@@ -275,7 +276,7 @@ func TestClient_CustomMarshalUnmarshal(t *testing.T) {
 		postData := map[string]string{"pokemon": "ditto"}
 		var result map[string]interface{}
 		
-		err := client.Post("https://httpbin.org/post", postData, &result)
+		err := client.Post(context.Background(), "https://httpbin.org/post", postData, &result)
 		if err != nil {
 			t.Fatalf("POST request failed: %v", err)
 		}

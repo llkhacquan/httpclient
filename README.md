@@ -30,10 +30,10 @@ type Client struct {
 
 ### Methods
 
-- `Get(url string, result interface{}, opts ...Option) error`
-- `Post(url string, body interface{}, result interface{}, opts ...Option) error`
-- `Patch(url string, body interface{}, result interface{}, opts ...Option) error`
-- `Delete(url string, result interface{}, opts ...Option) error`
+- `Get(ctx context.Context, url string, result interface{}, opts ...Option) error`
+- `Post(ctx context.Context, url string, body interface{}, result interface{}, opts ...Option) error`
+- `Patch(ctx context.Context, url string, body interface{}, result interface{}, opts ...Option) error`
+- `Delete(ctx context.Context, url string, result interface{}, opts ...Option) error`
 
 ### Options
 

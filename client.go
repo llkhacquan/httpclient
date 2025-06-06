@@ -2,6 +2,7 @@ package httpclient
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -19,10 +20,10 @@ type Client struct {
 }
 
 // Get performs a GET request and unmarshals JSON response
-func (c *Client) Get(url string, result interface{}, opts ...Option) error {
+func (c *Client) Get(ctx context.Context, url string, result interface{}, opts ...Option) error {
 	options := buildOptions(opts...)
 
-	req, err := c.buildRequest(http.MethodGet, url, nil, options)
+	req, err := c.buildRequest(ctx, http.MethodGet, url, nil, options)
 	if err != nil {
 		return fmt.Errorf("failed to create GET request: %w", err)
 	}
@@ -38,10 +39,10 @@ func (c *Client) Get(url string, result interface{}, opts ...Option) error {
 }
 
 // Post performs a POST request with JSON body and unmarshals JSON response
-func (c *Client) Post(url string, body interface{}, result interface{}, opts ...Option) error {
+func (c *Client) Post(ctx context.Context, url string, body interface{}, result interface{}, opts ...Option) error {
 	options := buildOptions(opts...)
 
-	req, err := c.buildRequest(http.MethodPost, url, body, options)
+	req, err := c.buildRequest(ctx, http.MethodPost, url, body, options)
 	if err != nil {
 		return fmt.Errorf("failed to create POST request: %w", err)
 	}
@@ -58,10 +59,10 @@ func (c *Client) Post(url string, body interface{}, result interface{}, opts ...
 }
 
 // Patch performs a PATCH request with JSON body and unmarshals JSON response
-func (c *Client) Patch(url string, body interface{}, result interface{}, opts ...Option) error {
+func (c *Client) Patch(ctx context.Context, url string, body interface{}, result interface{}, opts ...Option) error {
 	options := buildOptions(opts...)
 
-	req, err := c.buildRequest(http.MethodPatch, url, body, options)
+	req, err := c.buildRequest(ctx, http.MethodPatch, url, body, options)
 	if err != nil {
 		return fmt.Errorf("failed to create PATCH request: %w", err)
 	}
@@ -78,10 +79,10 @@ func (c *Client) Patch(url string, body interface{}, result interface{}, opts ..
 }
 
 // Delete performs a DELETE request and unmarshals JSON response
-func (c *Client) Delete(url string, result interface{}, opts ...Option) error {
+func (c *Client) Delete(ctx context.Context, url string, result interface{}, opts ...Option) error {
 	options := buildOptions(opts...)
 
-	req, err := c.buildRequest(http.MethodDelete, url, nil, options)
+	req, err := c.buildRequest(ctx, http.MethodDelete, url, nil, options)
 	if err != nil {
 		return fmt.Errorf("failed to create DELETE request: %w", err)
 	}
@@ -138,7 +139,7 @@ func (c *Client) getClient(options *Options) *http.Client {
 }
 
 // buildRequest creates an HTTP request with the given method, URL, and body
-func (c *Client) buildRequest(method, url string, body interface{}, options *Options) (*http.Request, error) {
+func (c *Client) buildRequest(ctx context.Context, method, url string, body interface{}, options *Options) (*http.Request, error) {
 	var bodyBytes []byte
 	if body != nil {
 		var err error
@@ -148,7 +149,7 @@ func (c *Client) buildRequest(method, url string, body interface{}, options *Opt
 		}
 	}
 
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(bodyBytes))
+	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewBuffer(bodyBytes))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
