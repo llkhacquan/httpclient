@@ -185,7 +185,7 @@ func TestClient_Post(t *testing.T) {
 		}
 
 		headers := result["headers"].(map[string]interface{})
-		
+
 		// Verify at least one of our custom headers is present to confirm WithHeaders works
 		foundCustomHeader := false
 		for key, value := range headers {
@@ -198,7 +198,7 @@ func TestClient_Post(t *testing.T) {
 				break
 			}
 		}
-		
+
 		if !foundCustomHeader {
 			t.Errorf("WithHeaders test failed - no custom headers found in response. Headers: %+v", headers)
 		}
@@ -275,7 +275,7 @@ func TestClient_CustomMarshalUnmarshal(t *testing.T) {
 	t.Run("post with custom marshal", func(t *testing.T) {
 		postData := map[string]string{"pokemon": "ditto"}
 		var result map[string]interface{}
-		
+
 		err := client.Post(context.Background(), "https://httpbin.org/post", postData, &result)
 		if err != nil {
 			t.Fatalf("POST request failed: %v", err)
@@ -286,7 +286,7 @@ func TestClient_CustomMarshalUnmarshal(t *testing.T) {
 		if jsonData["data"] == nil {
 			t.Error("expected custom marshal to wrap data")
 		}
-		
+
 		wrappedData := jsonData["data"].(map[string]interface{})
 		if wrappedData["pokemon"] != "ditto" {
 			t.Errorf("expected pokemon 'ditto', got '%v'", wrappedData["pokemon"])

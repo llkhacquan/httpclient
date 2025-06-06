@@ -65,7 +65,7 @@ func (c *Client) Get(ctx context.Context, url string, result interface{}, opts .
 	if err != nil {
 		return fmt.Errorf("failed to make GET request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return c.parseResponse(resp, result, options)
 }
@@ -85,7 +85,7 @@ func (c *Client) Post(ctx context.Context, url string, body interface{}, result 
 	if err != nil {
 		return fmt.Errorf("failed to make POST request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return c.parseResponse(resp, result, options)
 }
@@ -105,7 +105,7 @@ func (c *Client) Patch(ctx context.Context, url string, body interface{}, result
 	if err != nil {
 		return fmt.Errorf("failed to make PATCH request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return c.parseResponse(resp, result, options)
 }
@@ -124,7 +124,7 @@ func (c *Client) Delete(ctx context.Context, url string, result interface{}, opt
 	if err != nil {
 		return fmt.Errorf("failed to make DELETE request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return c.parseResponse(resp, result, options)
 }
