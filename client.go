@@ -136,14 +136,14 @@ func (c *Client) parseResponse(resp *http.Response, result interface{}, options 
 		*options.Status = resp.StatusCode
 	}
 
-	// Return error for non-OK status codes unless Status pointer is provided
-	if options.Status == nil && resp.StatusCode >= 400 {
-		return fmt.Errorf("HTTP error: %s", resp.Status)
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	// Return error for non-OK status codes unless Status pointer is provided
+	if options.Status == nil && resp.StatusCode >= 400 {
+		return fmt.Errorf("HTTP error: %s, body: %s", resp.Status, string(body))
 	}
 
 	if result != nil {
