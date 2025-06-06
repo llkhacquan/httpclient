@@ -1,3 +1,35 @@
+// Package httpclient provides a simplified HTTP client for making JSON API requests.
+//
+// This package offers both a default client for simple use cases and a configurable
+// Client type for more advanced scenarios. All HTTP methods support context cancellation
+// and customizable options including headers and status code handling.
+//
+// Basic usage with the default client:
+//
+//	var result MyStruct
+//	err := httpclient.Get(ctx, "https://api.example.com/data", &result)
+//
+// Using custom headers:
+//
+//	err := httpclient.Post(ctx, url, requestBody, &result,
+//	    httpclient.WithHeader("Authorization", "Bearer token"))
+//
+// Handling non-200 status codes:
+//
+//	var status int
+//	err := httpclient.Get(ctx, url, &result, httpclient.WithStatus(&status))
+//	if status == 404 {
+//	    // Handle not found
+//	}
+//
+// Custom client configuration:
+//
+//	client := &httpclient.Client{
+//	    Client: &http.Client{Timeout: 30 * time.Second},
+//	    MarshalFunc: customMarshal,
+//	    UnmarshalFunc: customUnmarshal,
+//	}
+//	err := client.Get(ctx, url, &result)
 package httpclient
 
 import (
