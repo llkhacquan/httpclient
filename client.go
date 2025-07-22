@@ -174,10 +174,14 @@ func (c *Client) getClient(options *Options) *http.Client {
 func (c *Client) buildRequest(ctx context.Context, method, url string, body interface{}, options *Options) (*http.Request, error) {
 	var bodyBytes []byte
 	if body != nil {
-		var err error
-		bodyBytes, err = c.marshal(body)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal request body: %w", err)
+		if b, ok := body.([]byte); ok {
+			bodyBytes = b
+		} else {
+			var err error
+			bodyBytes, err = c.marshal(body)
+			if err != nil {
+				return nil, fmt.Errorf("failed to marshal request body: %w", err)
+			}
 		}
 	}
 
