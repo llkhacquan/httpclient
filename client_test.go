@@ -227,6 +227,68 @@ func TestClient_Patch(t *testing.T) {
 	})
 }
 
+func TestClient_Put(t *testing.T) {
+	client := &Client{}
+
+	t.Run("put json data", func(t *testing.T) {
+		putData := map[string]interface{}{
+			"pokemon": "charizard",
+			"level":   50,
+			"moves":   []string{"flamethrower", "fly", "dragon-claw"},
+		}
+
+		var result map[string]interface{}
+		err := client.Put(context.Background(), "https://httpbin.org/put", putData, &result)
+		if err != nil {
+			t.Fatalf("PUT request failed: %v", err)
+		}
+
+		// httpbin.org returns the put data in the "json" field
+		if result["json"] == nil {
+			t.Error("expected response to contain 'json' field")
+		}
+
+		jsonData := result["json"].(map[string]interface{})
+		if jsonData["pokemon"] != "charizard" {
+			t.Errorf("expected pokemon 'charizard', got '%v'", jsonData["pokemon"])
+		}
+		if jsonData["level"].(float64) != 50 {
+			t.Errorf("expected level 50, got %v", jsonData["level"])
+		}
+	})
+
+	t.Run("put with custom headers", func(t *testing.T) {
+		putData := map[string]string{"update": "true"}
+		var result map[string]interface{}
+
+		err := client.Put(context.Background(), "https://httpbin.org/put", putData, &result,
+			WithHeader("X-Update-Type", "full-replacement"))
+		if err != nil {
+			t.Fatalf("PUT request failed: %v", err)
+		}
+
+		headers := result["headers"].(map[string]interface{})
+		if headers["X-Update-Type"] != "full-replacement" {
+			t.Errorf("expected header 'full-replacement', got '%v'", headers["X-Update-Type"])
+		}
+	})
+
+	t.Run("put with status capture", func(t *testing.T) {
+		var status int
+		putData := map[string]string{"test": "data"}
+		var result map[string]interface{}
+		err := client.Put(context.Background(), "https://httpbin.org/put", putData, &result,
+			WithStatus(&status))
+		if err != nil {
+			t.Fatalf("PUT request failed: %v", err)
+		}
+
+		if status != http.StatusOK {
+			t.Errorf("expected status 200, got %d", status)
+		}
+	})
+}
+
 func TestClient_Delete(t *testing.T) {
 	client := &Client{}
 

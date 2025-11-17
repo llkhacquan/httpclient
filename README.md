@@ -4,7 +4,7 @@ A simple and flexible HTTP client for Go that automatically handles JSON marshal
 
 ## Features
 
-- Simple HTTP methods: GET, POST, PATCH, DELETE
+- Simple HTTP methods: GET, POST, PUT, PATCH, DELETE
 - Automatic JSON marshaling and unmarshaling
 - Customizable marshal/unmarshal functions
 - Request options (headers, status capture)
@@ -32,6 +32,7 @@ type Client struct {
 
 - `Get(ctx context.Context, url string, result interface{}, opts ...Option) error`
 - `Post(ctx context.Context, url string, body interface{}, result interface{}, opts ...Option) error`
+- `Put(ctx context.Context, url string, body interface{}, result interface{}, opts ...Option) error`
 - `Patch(ctx context.Context, url string, body interface{}, result interface{}, opts ...Option) error`
 - `Delete(ctx context.Context, url string, result interface{}, opts ...Option) error`
 

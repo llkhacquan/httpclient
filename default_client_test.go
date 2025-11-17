@@ -49,6 +49,21 @@ func TestDefaultClientFunctions(t *testing.T) {
 		}
 	})
 
+	t.Run("package Put function", func(t *testing.T) {
+		putData := map[string]string{"update": "put"}
+		var result map[string]interface{}
+
+		err := Put(context.Background(), "https://httpbin.org/put", putData, &result)
+		if err != nil {
+			t.Fatalf("package Put function failed: %v", err)
+		}
+
+		jsonData := result["json"].(map[string]interface{})
+		if jsonData["update"] != "put" {
+			t.Errorf("expected update value 'put', got '%v'", jsonData["update"])
+		}
+	})
+
 	t.Run("package Delete function", func(t *testing.T) {
 		var result map[string]interface{}
 		err := Delete(context.Background(), "https://httpbin.org/delete", &result)

@@ -1,8 +1,8 @@
 // Package httpclient provides a simplified HTTP client for making JSON API requests.
 //
 // This package offers both a default client for simple use cases and a configurable
-// Client type for more advanced scenarios. All HTTP methods support context cancellation
-// and customizable options including headers and status code handling.
+// Client type for more advanced scenarios. All HTTP methods (GET, POST, PUT, PATCH, DELETE)
+// support context cancellation and customizable options including headers and status code handling.
 //
 // Basic usage with the default client:
 //
@@ -104,6 +104,26 @@ func (c *Client) Patch(ctx context.Context, url string, body interface{}, result
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to make PATCH request: %w", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	return c.parseResponse(resp, result, options)
+}
+
+// Put performs a PUT request with JSON body and unmarshals JSON response
+func (c *Client) Put(ctx context.Context, url string, body interface{}, result interface{}, opts ...Option) error {
+	options := buildOptions(opts...)
+
+	req, err := c.buildRequest(ctx, http.MethodPut, url, body, options)
+	if err != nil {
+		return fmt.Errorf("failed to create PUT request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := c.getClient(options)
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to make PUT request: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 
